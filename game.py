@@ -1,349 +1,89 @@
-import React, { useState, useEffect } from 'react';
+import streamlit as st
 
-const questions = [
-  // NIVEL 1: BÁSICO
-  {
-    level: "Básico",
-    question: "¿Cuál es el bloque más común en la superficie del mundo normal (Overworld)?",
-    options: ["Piedra", "Tierra", "Madera", "Arena", "Grava"],
-    answer: "Tierra"
-  },
-  {
-    level: "Básico",
-    question: "¿Qué herramienta es la más rápida para romper piedra?",
-    options: ["Hacha", "Pala", "Espada", "Pico", "Azada"],
-    answer: "Pico"
-  },
-  {
-    level: "Básico",
-    question: "¿Qué criatura explota silenciosamente al acercarse al jugador?",
-    options: ["Zombi", "Esqueleto", "Creeper", "Enderman", "Araña"],
-    answer: "Creeper"
-  },
-  {
-    level: "Básico",
-    question: "¿Con qué material principal se construye un portal al Nether?",
-    options: ["Bedrock", "Piedra", "Ladrillos del Nether", "Cuarzo", "Obsidiana"],
-    answer: "Obsidiana"
-  },
-  {
-    level: "Básico",
-    question: "¿Qué mineral se usa típicamente para crear tu primera armadura duradera?",
-    options: ["Oro", "Cobre", "Hierro", "Diamante", "Esmeralda"],
-    answer: "Hierro"
-  },
+# Configuración de la página
+st.set_page_config(page_title="Trivia de Minecraft", page_icon="⛏️", layout="centered")
 
-  // NIVEL 2: INTERMEDIO
-  {
-    level: "Intermedio",
-    question: "¿Cuántos bloques de hierro se necesitan para construir un Gólem de Hierro?",
-    options: ["2", "3", "4", "5", "6"],
-    answer: "4"
-  },
-  {
-    level: "Intermedio",
-    question: "¿Qué objeto necesitas para domesticar a un lobo?",
-    options: ["Carne podrida", "Pescado crudo", "Zanahoria", "Manzana", "Hueso"],
-    answer: "Hueso"
-  },
-  {
-    level: "Intermedio",
-    question: "¿Cuál es la altura máxima de construcción (Y) en las versiones recientes (1.18+)?",
-    options: ["128", "256", "319", "320", "512"],
-    answer: "320"
-  },
-  {
-    level: "Intermedio",
-    question: "¿Qué objeto deja caer el Enderman al morir?",
-    options: ["Ojo de Ender", "Perla de Ender", "Lágrima de Ghast", "Vara de Blaze", "Polvo de Redstone"],
-    answer: "Perla de Ender"
-  },
-  {
-    level: "Intermedio",
-    question: "¿Cómo se llama el jefe final del juego que reside en el End?",
-    options: ["Wither", "Guardián Anciano", "Warden", "Rey Esqueleto", "Dragón del Ender"],
-    answer: "Dragón del Ender"
-  },
+# Estilos CSS personalizados para darle un toque temático
+st.markdown("""
+    <style>
+    .titulo { text-align: center; color: #4CAF50; font-family: 'Courier New', monospace; font-size: 40px; font-weight: bold;}
+    .nivel { color: #FF9800; border-bottom: 2px solid #FF9800; padding-bottom: 5px; }
+    .stRadio > label { font-weight: bold; }
+    </style>
+""", unsafe_allow_html=True)
 
-  // NIVEL 3: EXPERTO
-  {
-    level: "Experto",
-    question: "¿En qué coordenada 'Y' es más óptimo minar diamantes en la versión 1.18+?",
-    options: ["Y=11", "Y=12", "Y=0", "Y=-59", "Y=-64"],
-    answer: "Y=-59"
-  },
-  {
-    level: "Experto",
-    question: "¿Cuál era el nombre original de Minecraft durante sus primeros días de desarrollo?",
-    options: ["Cave Game", "Block Builder", "Mine and Craft", "Infiniminer", "Voxel World"],
-    answer: "Cave Game"
-  },
-  {
-    level: "Experto",
-    question: "¿Qué disco de música está visiblemente roto y tiene un sonido aterrador?",
-    options: ["Stal", "Pigstep", "11", "13", "Mellohi"],
-    answer: "11"
-  },
-  {
-    level: "Experto",
-    question: "¿Qué encantamiento congela el agua bajo tus pies al caminar?",
-    options: ["Caída de Pluma", "Agilidad Acuática", "Toque de Seda", "Paso Helado", "Empuje"],
-    answer: "Paso Helado"
-  },
-  {
-    level: "Experto",
-    question: "¿Cuál de estas criaturas NO es clasificada como un no-muerto (undead)?",
-    options: ["Zombi", "Esqueleto Wither", "Creeper", "Ahogado", "Caballo Esqueleto"],
-    answer: "Creeper"
-  },
+st.markdown("<div class='titulo'>⛏️ TRIVIA CULTURA GENERAL DE MINECRAFT ⛏️</div>", unsafe_allow_html=True)
+st.write("¡Demuestra tus conocimientos sobre Minecraft! Responde estas 20 preguntas divididas en 4 niveles de dificultad.")
 
-  // NIVEL 4: VETERANO
-  {
-    level: "Veterano",
-    question: "¿En qué fecha se lanzó oficialmente la versión 1.0 de Minecraft?",
-    options: ["17 de Mayo de 2009", "15 de Agosto de 2010", "18 de Noviembre de 2011", "21 de Diciembre de 2011", "10 de Septiembre de 2012"],
-    answer: "18 de Noviembre de 2011"
-  },
-  {
-    level: "Veterano",
-    question: "¿Quién fue el creador original de Minecraft, también conocido por su alias?",
-    options: ["Jeb", "Notch", "Dinnerbone", "C418", "Kens"],
-    answer: "Notch"
-  },
-  {
-    level: "Veterano",
-    question: "¿Cuánta experiencia (puntos en total) se necesita exactamente para llegar al nivel 30 desde cero?",
-    options: ["825", "1395", "1500", "2045", "3000"],
-    answer: "1395"
-  },
-  {
-    level: "Veterano",
-    question: "¿Cuál es la probabilidad exacta de que una oveja nazca con lana rosa de forma natural?",
-    options: ["0.164%", "1.000%", "5.000%", "0.010%", "0.500%"],
-    answer: "0.164%"
-  },
-  {
-    level: "Veterano",
-    question: "¿Cuántos 'ticks de juego' (game ticks) equivalen a un segundo en Minecraft sin lag?",
-    options: ["10", "15", "20", "30", "60"],
-    answer: "20"
-  }
-];
-
-export default function MinecraftTrivia() {
-  const [gameState, setGameState] = useState('START'); // START, PLAYING, END
-  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [score, setScore] = useState(0);
-  const [selectedOption, setSelectedOption] = useState(null);
-  const [isAnswering, setIsAnswering] = useState(false);
-
-  // Inyectar fuente de estilo pixel art al montar
-  useEffect(() => {
-    const link = document.createElement('link');
-    link.href = 'https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap';
-    link.rel = 'stylesheet';
-    document.head.appendChild(link);
-    return () => { document.head.removeChild(link); };
-  }, []);
-
-  const styles = {
-    font: { fontFamily: "'Press Start 2P', cursive" },
-    textShadow: { textShadow: '2px 2px 0px #000' },
-    mcButton: {
-      backgroundColor: '#c6c6c6',
-      border: '4px solid',
-      borderTopColor: '#ffffff',
-      borderLeftColor: '#ffffff',
-      borderBottomColor: '#555555',
-      borderRightColor: '#555555',
-      boxShadow: 'inset -2px -2px 0px rgba(0,0,0,0.25)',
-      color: '#000',
-      textShadow: '1px 1px 0px #ddd'
-    },
-    mcButtonHover: {
-      backgroundColor: '#d6d6d6',
-    },
-    mcPanel: {
-      backgroundColor: 'rgba(0, 0, 0, 0.7)',
-      border: '4px solid #555'
-    }
-  };
-
-  const startGame = () => {
-    setGameState('PLAYING');
-    setCurrentQuestionIndex(0);
-    setScore(0);
-    setSelectedOption(null);
-    setIsAnswering(false);
-  };
-
-  const handleAnswer = (option) => {
-    if (isAnswering) return;
-    
-    setSelectedOption(option);
-    setIsAnswering(true);
-
-    const currentQuestion = questions[currentQuestionIndex];
-    if (option === currentQuestion.answer) {
-      setScore(prev => prev + 1);
-    }
-
-    // Esperar un poco antes de pasar a la siguiente
-    setTimeout(() => {
-      if (currentQuestionIndex + 1 < questions.length) {
-        setCurrentQuestionIndex(prev => prev + 1);
-        setSelectedOption(null);
-        setIsAnswering(false);
-      } else {
-        setGameState('END');
-      }
-    }, 1200);
-  };
-
-  const renderStart = () => (
-    <div className="flex flex-col items-center justify-center h-full w-full p-6 text-center z-10" style={styles.font}>
-      <div style={styles.mcPanel} className="p-10 rounded shadow-2xl max-w-2xl w-full flex flex-col items-center">
-        <h1 className="text-4xl md:text-5xl text-yellow-300 mb-6 leading-tight" style={styles.textShadow}>
-          TRIVIA DE MINECRAFT
-        </h1>
-        <p className="text-white text-sm md:text-base mb-8 leading-relaxed" style={styles.textShadow}>
-          Pon a prueba tu conocimiento. <br/>
-          4 Niveles, 20 Preguntas. <br/>
-          ¿Podrás conseguir el Diamante?
-        </p>
-        <button 
-          onClick={startGame}
-          className="w-full md:w-auto px-8 py-4 text-xl hover:bg-gray-100 transition transform hover:scale-105"
-          style={styles.mcButton}
-        >
-          JUGAR
-        </button>
-      </div>
-    </div>
-  );
-
-  const renderPlaying = () => {
-    const q = questions[currentQuestionIndex];
-    const progress = ((currentQuestionIndex) / questions.length) * 100;
-
-    return (
-      <div className="flex flex-col items-center w-full h-full p-4 md:p-8 z-10" style={styles.font}>
-        
-        {/* Header (Score & Progress) */}
-        <div className="w-full max-w-3xl flex justify-between items-center mb-6 text-white text-xs md:text-sm">
-          <div style={styles.textShadow}>NIVEL: <span className="text-green-400">{q.level}</span></div>
-          <div style={styles.textShadow}>PUNTAJE: {score}</div>
-        </div>
-
-        {/* Progress bar */}
-        <div className="w-full max-w-3xl bg-gray-800 h-4 border-2 border-black mb-8">
-          <div className="bg-green-500 h-full transition-all duration-300" style={{width: `${progress}%`}}></div>
-        </div>
-
-        {/* Question Panel */}
-        <div style={styles.mcPanel} className="p-6 md:p-8 w-full max-w-3xl flex flex-col items-center mb-8">
-          <h2 className="text-white text-sm md:text-lg mb-4 text-center text-gray-400">
-            Pregunta {currentQuestionIndex + 1} de {questions.length}
-          </h2>
-          <p className="text-white text-base md:text-xl text-center leading-relaxed mb-6" style={styles.textShadow}>
-            {q.question}
-          </p>
-        </div>
-
-        {/* Options Grid */}
-        <div className="w-full max-w-3xl grid grid-cols-1 md:grid-cols-2 gap-4">
-          {q.options.map((option, index) => {
-            let bgColorClass = "";
-            let btnStyles = { ...styles.mcButton };
-            
-            if (isAnswering) {
-              if (option === q.answer) {
-                // Respuesta correcta en verde estilo minecraft
-                btnStyles.backgroundColor = '#55FF55';
-              } else if (option === selectedOption) {
-                // Respuesta incorrecta elegida en rojo
-                btnStyles.backgroundColor = '#FF5555';
-              }
-            }
-
-            return (
-              <button
-                key={index}
-                onClick={() => handleAnswer(option)}
-                disabled={isAnswering}
-                className={`px-4 py-4 text-xs md:text-sm transition-transform active:scale-95 text-center ${index === 4 ? "md:col-span-2" : ""}`}
-                style={btnStyles}
-              >
-                {option}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-    );
-  };
-
-  const renderEnd = () => {
-    let resultMessage = "";
-    let emojis = "";
-    
-    if (score === 20) {
-      emojis = "💎💎💎";
-      resultMessage = "FELICIDADES, ACERTASTE TODAS";
-    } else if (score >= 10 && score <= 19) {
-      emojis = "🥇🪙🛡️";
-      resultMessage = "BUEN TRABAJO";
-    } else if (score >= 1 && score <= 9) {
-      emojis = "⬛🪨";
-      resultMessage = "BUEN INTENTO";
-    } else {
-      emojis = "🧨";
-      resultMessage = "HAS PERDIDO";
-    }
-
-    return (
-      <div className="flex flex-col items-center justify-center h-full w-full p-6 text-center z-10" style={styles.font}>
-        <div style={styles.mcPanel} className="p-10 rounded shadow-2xl max-w-2xl w-full flex flex-col items-center">
-          
-          <div className="text-6xl mb-6">{emojis}</div>
-          
-          <h1 className="text-2xl md:text-3xl text-yellow-300 mb-6 leading-tight" style={styles.textShadow}>
-            {resultMessage}
-          </h1>
-          
-          <p className="text-white text-lg md:text-xl mb-10" style={styles.textShadow}>
-            Puntaje Final: {score} / {questions.length}
-          </p>
-
-          <button 
-            onClick={startGame}
-            className="w-full md:w-auto px-8 py-4 text-sm md:text-base transition transform hover:scale-105"
-            style={styles.mcButton}
-          >
-            VOLVER A JUGAR
-          </button>
-        </div>
-      </div>
-    );
-  };
-
-  return (
-    // Fondo general que simula bloque de tierra
-    <div className="min-h-screen flex flex-col relative bg-green-900" 
-         style={{
-           backgroundImage: 'repeating-linear-gradient(45deg, #5b3e2b 25%, transparent 25%, transparent 75%, #5b3e2b 75%, #5b3e2b), repeating-linear-gradient(45deg, #5b3e2b 25%, #4a3222 25%, #4a3222 75%, #5b3e2b 75%, #5b3e2b)',
-           backgroundPosition: '0 0, 20px 20px',
-           backgroundSize: '40px 40px'
-         }}>
-      
-      {/* Capa de oscurecimiento (para dar contraste) */}
-      <div className="absolute inset-0 bg-black bg-opacity-40 z-0"></div>
-
-      <main className="flex-grow flex items-center justify-center overflow-y-auto">
-        {gameState === 'START' && renderStart()}
-        {gameState === 'PLAYING' && renderPlaying()}
-        {gameState === 'END' && renderEnd()}
-      </main>
-    </div>
-  );
+# Base de datos de preguntas
+preguntas = {
+    "BÁSICO": [
+        {"q": "1. ¿Cuál es el material más básico para empezar a crear herramientas?", "options": ["Tierra", "Piedra", "Madera", "Hierro", "Diamante"], "ans": "Madera"},
+        {"q": "2. ¿Qué criatura (mob) verde explota cuando se acerca al jugador?", "options": ["Zombi", "Esqueleto", "Creeper", "Enderman", "Araña"], "ans": "Creeper"},
+        {"q": "3. ¿Qué herramienta es la correcta y más rápida para picar piedra?", "options": ["Hacha", "Pala", "Espada", "Pico", "Azada"], "ans": "Pico"},
+        {"q": "4. ¿En qué dimensión final se encuentra el Dragón de Ender?", "options": ["El Nether", "El Overworld", "El End", "El Vacío", "Las Cuevas Profundas"], "ans": "El End"},
+        {"q": "5. ¿Qué mineral se usa comúnmente para hacer tu primera armadura resistente y escudos?", "options": ["Oro", "Cobre", "Hierro", "Esmeralda", "Lápislázuli"], "ans": "Hierro"}
+    ],
+    "INTERMEDIO": [
+        {"q": "6. ¿Cómo se llama el reino infernal al que se accede con un portal de obsidiana?", "options": ["El Aether", "El Nether", "Tierras Bajas", "El Núcleo", "Dimensión Carmesí"], "ans": "El Nether"},
+        {"q": "7. ¿Qué bloque se utiliza para encantar armas y herramientas?", "options": ["Yunque", "Piedra de afilar", "Mesa de trabajo", "Mesa de encantamientos", "Soporte para pociones"], "ans": "Mesa de encantamientos"},
+        {"q": "8. ¿Qué criatura neutral y alta se vuelve hostil si la miras directamente a los ojos?", "options": ["Lobo", "Golem de Hierro", "Enderman", "Piglin", "Aldeano"], "ans": "Enderman"},
+        {"q": "9. ¿Cuál es el nivel máximo de experiencia requerido para el mejor encanto en una mesa rodeada de librerías?", "options": ["Nivel 15", "Nivel 20", "Nivel 30", "Nivel 50", "Nivel 100"], "ans": "Nivel 30"},
+        {"q": "10. ¿Qué objeto necesitas obligatoriamente para recolectar agua o lava?", "options": ["Frasco de cristal", "Cuenco de madera", "Cubo de hierro", "Vaso", "Saco"], "ans": "Cubo de hierro"}
+    ],
+    "EXPERTO": [
+        {"q": "11. ¿Qué bloque no puede ser movido por un pistón normal ni pegajoso?", "options": ["Tierra", "Madera", "Obsidiana", "Cristal", "Arena"], "ans": "Obsidiana"},
+        {"q": "12. ¿Qué poción específica necesitas lanzarle a un aldeano zombi para curarlo (junto con una manzana dorada)?", "options": ["Poción de Curación", "Poción de Regeneración", "Poción de Debilidad", "Poción de Fuerza", "Poción de Resistencia al fuego"], "ans": "Poción de Debilidad"},
+        {"q": "13. ¿Cuál es la probabilidad base (aprox) de que una oveja nazca de color rosa naturalmente?", "options": ["1.000%", "0.164%", "0.500%", "5.000%", "0.001%"], "ans": "0.164%"},
+        {"q": "14. En las versiones recientes (1.18+), ¿en qué coordenada 'Y' es más óptimo encontrar diamantes?", "options": ["Y = 11", "Y = 12", "Y = 0", "Y = -59", "Y = -64"], "ans": "Y = -59"},
+        {"q": "15. ¿Qué mob de las Mansiones del Bosque es capaz de invocar Vexes (Ánimas)?", "options": ["Saqueador (Pillager)", "Vindicador", "Invocador (Evoker)", "Bruja", "Ilusionista"], "ans": "Invocador (Evoker)"}
+    ],
+    "VETERANO": [
+        {"q": "16. ¿Cuál es el límite máximo de altura para construir bloques en el Overworld en las versiones actuales?", "options": ["256 bloques", "320 bloques", "512 bloques", "128 bloques", "1024 bloques"], "ans": "320 bloques"},
+        {"q": "17. ¿Qué disco de música del juego está visualmente roto y tiene un audio sumamente espeluznante?", "options": ["Disco 13", "Disco 11", "Mellohi", "Stal", "Pigstep"], "ans": "Disco 11"},
+        {"q": "18. ¿Cómo se conocía al límite del mapa glitcheado que se generaba a millones de bloques en versiones antiguas (Beta)?", "options": ["El Vacío", "Far Lands (Tierras Lejanas)", "El Muro de Hielo", "El Borde del Mundo", "La Barrera"], "ans": "Far Lands (Tierras Lejanas)"},
+        {"q": "19. ¿A cuántos tics (ticks) de redstone equivale exactamente un segundo en la vida real?", "options": ["20 tics", "10 tics", "5 tics", "15 tics", "40 tics"], "ans": "10 tics"},
+        {"q": "20. ¿Quién es el creador original de Minecraft, también conocido por su apodo?", "options": ["Jeb (Jens Bergensten)", "Notch (Markus Persson)", "Dinnerbone (Nathan Adams)", "C418 (Daniel Rosenfeld)", "Keralis"], "ans": "Notch (Markus Persson)"}
+    ]
 }
+
+# Formulario para las preguntas
+with st.form("formulario_trivia"):
+    respuestas_usuario = {}
+    
+    for nivel, pregs in preguntas.items():
+        st.markdown(f"<h2 class='nivel'>Nivel: {nivel}</h2>", unsafe_allow_html=True)
+        for i, p in enumerate(pregs):
+            st.markdown(f"**{p['q']}**")
+            # Clave única para cada pregunta
+            clave = f"{nivel}_{i}"
+            respuestas_usuario[clave] = st.radio("Selecciona tu respuesta:", p["options"], key=clave, index=None)
+            st.write("---")
+            
+    boton_enviar = st.form_submit_button("Terminar Trivia y Ver Puntuación")
+
+# Lógica de puntuación
+if boton_enviar:
+    puntaje = 0
+    # Verificamos que haya respondido todas (opcional, pero buena práctica)
+    if None in respuestas_usuario.values():
+        st.warning("⚠️ Parece que dejaste algunas preguntas sin responder. ¡Intenta marcar todas para obtener tu puntaje real!")
+        
+    for nivel, pregs in preguntas.items():
+        for i, p in enumerate(pregs):
+            clave = f"{nivel}_{i}"
+            if respuestas_usuario[clave] == p["ans"]:
+                puntaje += 1
+                
+    st.markdown(f"## Tu Puntaje Final: {puntaje} / 20")
+    
+    # Sistema de premios y mensajes solicitado
+    if puntaje == 20:
+        st.success("💎💎💎 FELICIDADES, ACERTASTE TODAS 💎💎💎")
+        st.balloons()
+    elif puntaje >= 10:
+        st.info("🥇🥈 BUEN TRABAJO 🥇🥈 (Lingotes de Oro y Hierro)")
+    elif puntaje > 0:
+        st.warning("⬛⬛ BUEN INTENTO ⬛⬛ (Carbón)")
+    else:
+        st.error("🧨🧨 HAS PERDIDO 🧨🧨 (TNT)")
